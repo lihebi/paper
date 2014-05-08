@@ -10,14 +10,14 @@
 
 
 \begin{document}
-\title{Distributed Random Servers with Timed Labels for Synchronization over Named Data Network}
-\author{\IEEEauthorblockN{Hebi Li, Xiaobin Tan, Zijian Zhou, Zhifan Zhao}
-\IEEEauthorblockA{
-CAS Key Laboratory of Technology in Geo-spatial Information Processing and Application System\\
-University of Science and Technology of China\\
-Hefei, P.R. China\\
-Email: lihebi@mail.ustc.edu.cn, xbtan@ustc.edu.cn, zjzhou62@mail.ustc.edu.cn, zzfan@mail.ustc.edu.cn}
-}
+\title{TreeSync: A Distributed Message Synchronization Algorithm Using Topology-Related Hierarchy over Named Data Network}
+%\author{\IEEEauthorblockN{Hebi Li, Xiaobin Tan, Zijian Zhou, Zhifan Zhao}
+%\IEEEauthorblockA{
+%CAS Key Laboratory of Technology in Geo-spatial Information Processing and Application System\\
+%University of Science and Technology of China\\
+%Hefei, P.R. China\\
+%Email: lihebi@mail.ustc.edu.cn, xbtan@ustc.edu.cn, zjzhou62@mail.ustc.edu.cn, zzfan@mail.ustc.edu.cn}
+%}
 \maketitle
 
 % \lhead{Submitted to INFOCOM'2014 Workshop on Name-Oriented Mobility on 12/30/2013}
@@ -27,12 +27,12 @@ Email: lihebi@mail.ustc.edu.cn, xbtan@ustc.edu.cn, zjzhou62@mail.ustc.edu.cn, zz
 Key problem of multi-user real-time communication applications,
 such as group chat and video conference,
 is how to synchronize messages among all participants.
-In this paper, we propose a new protocol based on Named Data Network to address this problem.
-In this protocol, the system will randomly select multi-level servers
-in charge of the synchronization of time-labeled control messages,
-while data fetching in distributed way.
+Traditional IP-based way depends on central server, resulting in unbalanced link burden and robust problem.
+In this paper, we propose a new distributed algorithm based on Named Data Network to address this problem.
+In our design, the system generates a tree topology according to the real one.
+Every node takes responsibility to synchronize its children and bubble messages up to its parent.
 This method synthesizes the powerful control ability of servers and NDN's distributed features.
-We implemented our design and it proved high quality performance of fast data fetching and strong control ability.
+We implemented our design on NDNsim and it proved small overhead and fast synchronization.
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
@@ -41,96 +41,70 @@ We implemented our design and it proved high quality performance of fast data fe
 
 Applications dealing with multi-user communications,
 like group chat and video conference,
-is an important part of modern life.
-However, it is still a problem about how to synchronize data within participants.
+needs efficient and robust way to synchronize among participants.
 Traditionally in IP-based network,
-all the participants should register on the central server,
-send self-generated messages to the server as well as fetching data back from it.
-Due that IP-based network only provides support for end-to-end communication,
-so everyone should set up a connection with the server.
+all the participants should register on a central server,
+send self-generated messages to it as well as fetching data back from it.
+Due that IP-based network only provides support for point-to-point communication,
+everyone should have to set up a connection with the server.
 The server has to send a copy to every participant regardless of the fact that
-they may be near each other very much in the topology,
+they may be near each other in the topology,
 resulting in performance problems, such as high burden of links and bandwidth,
 extremely big overhead, etc.
+What's worse, the whole system goes down when the server fails.
+
 As one of the Future Internet Architecture(FIA)\cite{FIA},
 Named Data Network(NDN)\cite{NDN001} goes over the basic downsides of IP-based network,
 providing the basis of this new method to handle synchronization problems.
-In NDN, routers will filt the duplicated interest,
-only send one copy to the next hop,
-which ensures that there is only one same interest per link.
-The router will record all the incoming interest's interfaces,
-so that it could forward the received data to every interface that comes the interest.
-Besides, NDN router has the ability to cache data packet thanks to Content Store.
-So if there comes a same interest,
-the router could satisfy it immediately without fetching for the same data packet again from the producer.
-The proposed method in this paper take fully advantage of these useful features provided by NDN.
-In the mean while,
-this method uses self-generated multi-level servers to synchronize control messages,
-which is a mix of merits of traditional mode and NDN.
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item Instead of point-to-point connection, resources in NDN are identified by a unique name.
+Consumers just send interests for the specific name rather than to a certain IP.
+	\item In NDN, routers will filter the duplicated requests and only send one copy to the next hop.
+	\item NDN routers will response to all incoming interests when receiving data from next hop.
+	\item NDN router has the ability to cache data packet thanks to Content Store,
+which enables the routers to response immediately for a same interest.
+\end{enumerate}
+Based on these features, it's time to get messages synchronized in distributed way
+to gain small overhead and high robustness.
 
-In the very beginning,
-everyone waits for a specific random time before sending \emph{Any Server Interest} inquiry.
-If he doesn't receive a reply, he will assume himself the server,
-and thus ready to satisfy the same interest from others.
-On receiving this reply, a node will set his server and request control messages from the server.
-In the case that the region is large,
-an upper level server will be generated from the lower level servers in the same way,
-resulting in multi-level architecture.
-Everyone send a heart beat interest to his server to check whether the server is still available.
-Once the server failure is detected,
-a new server that substitutes him will be selected from the clients in the same group.
-A new participant can find a server to get synchronization control messages in his neighborhood.
-
-When a participant generates some data,
-he will send interest together with the true data name to inform his server about it.
-When the server received such interest,
-he will add his name and time to the label of this record and save it in local log.
-If there is an upper level server, he will inform his server again in the same way.
-
-In order to get latest control messages,
-every participant sends sync interest, which we call \emph{Anything New Interest},
-to its server, with the latest labels he knows. When the sync interest times out,
-a same interest is resent. On receiving the sync interest,
-the server compares the label with his own.
-If the label's time is the same as his,
-it is saved as pending interest for the sake of immediate reply when status updates.
-If the label is older than his latest label,
-he will find all the new records after the specific time and send them back in data packet.
-On receiving this data packet, the client extracts the record from the packet,
-adds them into his own record log and sends data interest for real data.
-If the client is also a server in a lower level,
-he will reply to his client's sync interest,
-thus forward the synchronization control messages to the whole system.
-
-As for real data fetching, since that the name of every piece of data is stable,
-the interest from every participant for the same data
-will be aggregated by routers ensuring no duplicated interests in one link.
-When the data packet is returned from the publisher,
-it travels the reverse path of the interest to all the receiver,
-resulting in small overhead. Besides, the data packet can be cached in router's Content Store,
-so when there is another participant requesting for the same data,
-he will get it in the router instead of the publisher.
+There is a distributed algorithm to deal with synchronization problem by researchers in UCLA, the
+\emph{ChronoSync\cite{ChronoSync}}.
+ChronoSync is a pure distributed protocol,
+where participants in the system broadcast sync interests to the whole system.
+Since the newly generated message can be responsed directly to the sync insterests,
+it can be very fast for every one to receive it.
+However, ChronoSync also suffers from several downsides.
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item There is no server, so no control ability when conflict happens.
+For example, when there are simultaneous messages generated,
+the existing sync interests may be consumed by different messages,
+resulting in divide of the system.
+	\item Sync Interest is broadcasted, so it is not scalable.
+\end{enumerate}
 
 Our Contribution includes:
-(1) proposed a new protocol handling the problem of multi-user application synchronization over NDN.
-(2) implemented our new thoughts on ndnSIM\cite{ndnSIM}.
-(3) evaluated the performance of our methods.
-Demonstrated the merits of our design in comparison to another related protocol \emph{ChronoSync\cite{ChronoSync}}.
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item proposed a new algorithm handling the problem of message synchronization using NDN.
+	\item implemented our new protocol on ndnSIM\cite{ndnSIM}.
+	\item evaluated the performance of our methods.
+Demonstrated the merits of our design in comparison to ChronoSync.
+\end{enumerate}
 
 The rest of the paper is organized as follows.
 We describe our protocol design in detail in section \ref{design}.
-n section \ref{implementation},
+In section \ref{implementation},
 we talk about the implementation on ndnSIM over NS3 platform and evaluate the performance.
 Section \ref{related_work} shows related work,
 and we conclude the paper in section \ref{conclusion}.
 
 \section{Protocol Design}
 \label{design}
+
 \subsection{NDN Background}
 This section briefly goes through the necessary Named Data Network architecture background in support for our protocol.
-In NDN, communication is consumer driven,
-which means the consumer sends interest to fetch the data back.
-Every piece of data is specified by its name. When a router receives an interest,
+In NDN, communication is consumer driven.
+Consumer sends out interest to fetch the data back.
+Every piece of data is specified by its uique name. When a router receives an interest,
 it will first check whether the desired data is in its \emph{Content Store(CS)}.
 If the data packet is already cached in Content Store,
 the router will drop the interest and return the data packet.
@@ -153,20 +127,101 @@ it means that no one sends the interest for this data or the interest timed out,
 so it can cache the data packet in its Content Store or just simply drop it.
 In this way, data packets will be forwarded back to all the consumers in the reverse path of interest packets.
 
+\subsection{Design Goals}
+We kept several goals when designing the protocol.
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item No central servers. We shoud make sure that it is a distributed robust protocol.
+	\item Has ability to handle simultaneous data generation.
+	\item Scalable.
+\end{enumerate}
+
+To achieve these, we design a tree topology. Each node is the controller of its children nodes.
+Multi tiers make sure that it is scalable.
+Each controller is selected by the system according to topology,
+and the root of the tree is just someone who is selected multi times, nothing else special.
+If a controller fails, one of his children takes his place.
+Finally, since every controller is in charge of the control message synchronization,
+the simultaneous data generation will not become a problem.
+
+\subsection{Overview}
+
+In this section, we are going to talk about the whole synchronization process briefly.
+We will discuss every part in detail in the following sections.
+
+\subsubsection{Tree Topology}
+When someone join a system, the first thing for him is to find his position in the topology.
+At the very beginning,
+veryone waits for a specific random time before sending \emph{Any Server Interest} inquiry.
+If he doesn't receive a reply, he will assume himself the controller,
+and thus ready to satisfy the same interest from others.
+On receiving this reply, a node will set its parent and request control messages from it.
+The \emph{Any Server Interest} is labeled by a specific level to enable multi-level controller.
+
+Everyone sends a heart beat interest to his server to check whether the server is still available.
+Once the server failure is detected,
+a new server that substitutes him will be selected from the clients in the same group.
+A new participant can find a controller to be its parent in his neighborhood,
+
+\subsubsection{Control Message}
+Controllers control the sync process by what we call \emph{Control Message}(CM for short).
+CMs are not real data, but the packet to tell when and where the data is.
+Besides the actual data's NDN name, the CM keeps a label.
+When CM propagates down the tree,
+each controller insert his name and the time he receive it to the label.
+As a result, a node will receive a CM containing the name and time of all its parents.
+
+\subsubsection{Synchronization}
+When a participant knows something new,
+he will propagate it down to his clients and bubble it to his parents.
+
+\subsubsection{Bubble Up}
+In the case a node has something new to tell,
+it sends interest together with the true data name to inform his parent about it.
+When the controller receives such interest,
+he adds his name and time to the label of this record and save it in local log.
+If he also has a parent, he bubbles this up in the same way.
+
+\subsubsection{Propagation Down}
+In order to get latest control messages,
+every participant sends sync interest, which we call \emph{Anything New Interest},
+to its server, with the latest labels he knows.
+When the sync interest times out, a same interest is resent.
+On receiving the sync interest, the server compares the label with his own.
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item If the label's time is the same as his,
+it is saved as pending interest for the sake of immediate reply when status updates.
+	\item If the label is older than his latest label,
+he will find all the new records after the specific time and send them back in data packet.
+\end{enumerate}
+On receiving response of sync interest,
+a client propagates it down by satisfying the sync interest from his clients,
+thus forwards the CM to the whole system.
+
+\subsubsection{Actual Data Fetching}
+On receiving CM, everyone sends out interest for the specific data name directly.
+Since that the name of every piece of data is stable in NDN,
+the interest from every participant for the same data
+will be aggregated by routers ensuring no duplicated interests in one link.
+When the data packet is returned from the publisher,
+it travels the reverse path of the interest to all the receiver,
+resulting in small overhead. Besides, the data packet can be cached in router's Content Store,
+so when there is another participant requesting for the same data,
+he will get it in the router instead of the publisher.
+
 \subsection{Naming Rules}
 
 Naming is one of the most important parts of NDN applications.
 In this section, we briefly go through all the interest names that we use in this design,
-and they will be discussed throughly in the following sections for details.
+and they will be discussed thoroughly in the following sections for details.
 
 There are four interest names in our design, as in Table \ref{interest_name}.
-\emph{Any Server Interest} is used for server generation.
-\emph{Something New Interest} and \emph{Anything New Interest} are responsible for synchronizing control messages.
-\emph{Data Interest} serves for actual data fetching.
+\emph{Any Server Interest}(ASI) is used for server generation.
+\emph{Something New Interest}(SNI) and \emph{Anything New Interest}(ANI) are responsible for synchronizing control messages.
+\emph{Data Interest}(DI) serves for actual data fetching.
 The first part is used for router to forward the interest packet correctly.
 \emph{`/broadcast'} interest is routed to all the corresponding interfaces.
 \emph{`/serverName'} and \emph{`/publisher'} are routed to specific nodes.
-The second component, \emph{`/drsapp'} is a specific label for the application.
+The second component, \emph{`/treesync'} is a specific label for the application.
 \footnote{To inserting FIBs into routers, the client publishes the interest name,
 declaring that they can reply to such interest.
 The router protocols, such as OSPF\cite{OSPF}\cite{OSPFN},
@@ -184,18 +239,19 @@ and we will cover them in the following sections in detail.
 \centering
 \begin{tabular}{|c|c|}
 \hline
-Any Server Interest & /broadcast/drsapp/anyserver/\emph{level}\\
+Any Server Interest & /broadcast/treesync/anyserver/\emph{level}\\
 \hline
-Something New Interest & /\emph{serverName}/drsapp/somethingnew/\emph{mylabel}/\emph{dataName}\\
+Something New Interest & /\emph{serverName}/treesync/somethingnew/\emph{mylabel}/\emph{dataName}\\
 \hline
-Anything New Interest & /\emph{serverName}/drsapp/anythingnew/\emph{label1:label2:label3}\\
+Anything New Interest & /\emph{serverName}/treesync/anythingnew/\emph{label1:label2:label3}\\
 \hline
-Data Interest & /\emph{publisherName}/drsapp/\emph{time}\\
+Data Interest & /\emph{publisherName}/treesync/\emph{time}\\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{Server Generation}
+
+\subsection{Tree Topology Generation}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=2.5in]{../png/server-generation.png}
@@ -210,15 +266,15 @@ The last element \emph{`level'} is a number indicating in which level the sender
 In the very beginning,
 everyone doesn't have a server.
 They will individually wait for a random time and broadcast
-\emph{Any Server Interest} to inquire whether there is a server nearby.
+ASI to inquire whether there is a server nearby.
 Then they wait a time $T_s$ for the reply.
 On receiving the data containing the server name,
-the participant will set his server to this server name and request for synchronization control messages from then on.
+the participant will set his server and request for CM from it later.
 Otherwise, if he doesn't receive a data after Ts,
 he assumes himself as the server and thus is ready to reply the such interests from others.
 When the region is large, there should be many groups, each has a selected server.
 These servers will obey the same rules, wait for a random time,
-and broadcast an \emph{Any Server Interest} with their current level.
+and broadcast an ASI with their current level.
 After sending this interest,
 the sender waits a time related to his current level
 \footnote{This time is a function of current level, because the higher the level is,
@@ -241,42 +297,7 @@ Noting that the server generation procedure is closely related to the reply dela
 so the randomly selected multi-level servers are closely related to the topology as well.
 The direction of transmission is related to the topology,
 thus it is smart enough not to forward the messages in round.
-This provides high performance for transferring synchronization control messages between clients and servers.
-
-\subsection{Data Structure}
-\begin{figure}[!t]
-\centering
-\includegraphics[width=2.5in]{../png/data-structure.png}
-\caption{Data Structure}
-\label{data_structure}
-\end{figure}
-In this section,
-we describe the data structure used for storing and processing synchronization messages.
-
-As shown in Figure \ref{data_structure}, there are two data structures in every node, name
-y Message Container and Record Container.
-Message Container stores the actual data generated by this participant.
-Keep in mind that participant doesn't need to store everyone else's messages.
-They only care about whether they have received all the others' messages.
-However, it is the publisher's responsibility to store his own published messages
-for the sake of replying the actual data request interest from others.
-Record Container holds the synchronization control records.
-A timed label is the pair of a user name and his time.
-A record holds a data name and all the labels on behalf of the dataname.
-A record container consists of two parts, namely \emph{Record Vector} and \emph{NameTimeIndex}.
-The \emph{Record Vector} is an array of the records by sequence,
-so that their indexes can tell which is newer.
-The \emph{NameTimeIndex} structure is a dual map.
-It is use to find the first index that is newer than a provided label contains a name and time.
-The index is the one that used in \emph{Record Vector}.
-
-Note that every label about a record contains a user name and user time,
-thus there's no problem when different participants use different time criteria.
-Also, since that the record only contains labels from the participants' upper-level servers,
-and the top level is a small constant number, we don't need to worry about a huge amount of labels.
-What's more, when a server is down, his labels will never be updated again,
-so we can use some algorithm like Least Recent Use(LRU)\cite{LRU} to delete useless labels. One more thing,
-this design provide support for node failure and node mobility, which is referred in Section \ref{mobility}.
+This provides high performance for transferring CM between clients and servers.
 
 \subsection{Synchronization}
 \begin{figure}[!t]
@@ -292,59 +313,67 @@ this design provide support for node failure and node mobility, which is referre
 \label{tree_synchronization}
 \end{figure}
 We describe how to synchronize in the system in this section.
-As shown in Figure \ref{synchronization}, a client sends \emph{Something New Interest} to inform server a new change.
-erver then reply pending \emph{Anything New Interest} with the new change.
+As shown in Figure \ref{synchronization}, a client sends SNI to inform server a new change.
+erver then reply pending ANI with the new change.
 Participants fetch actual data in distributed way.
 Figure \ref{tree_synchronization} shows multi-level synchronization.
 A node will transfer the new status to upper and down level,
-through sending \emph{Something New Interest} and replying \emph{Anything New Interest} respectively.
+through sending SNI and replying ANI respectively.
 
 \subsubsection{Something New Interest}
-Once a node generates a new message, or he receives a \emph{Something New Interest} from his client,
-he will send this interest to his server with the actual data name.
-When a participant generates a new data, he will do the following things:
-(1) adds the data to his Message Container.
-(2) adds his own label to the record and stores it in his local Record Container.
-(3) sends \emph{Something New Interest} with his label and the actual data name to his server
-(4) processes pending interest.
-On receiving a \emph{Something New Interest}, a server  will do the following things:
-(1) removes the labels in this record
-\footnote{because every node only keeps the labels from his upper level servers.},
-add his own label and store it into local Record Container.
-(2) sends Something New Interest with his label and the actual data name to his server, if has.
-(3) processes pending interest
-(4) sends interest with the data name to fetch actual data.
+Once a node generates a new message, or he receives a SNI from his client,
+he will bubble this up by sending this interest to his server with the actual data name.
 
-Note that \emph{Something New Interest} contains the actual data name in the end,
+When a participant generates a new data, he will do the following things:
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item adds the data to his Message Container.
+	\item adds his own label to the record and stores it in his local Record Container.
+	\item sends SNI with his label and the actual data name to his server
+	\item processes pending interest.
+\end{enumerate}
+On receiving a SNI, a server  will do the following things:
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item removes the labels in this record
+\footnote{because every node only keeps the labels from his upper level servers.},
+, add his own label and store it into local Record Container.
+	\item sends Something New Interest with his label and the actual data name to his server, if has.
+	\item processes pending interest
+	\item sends interest with the data name to fetch actual data.
+\end{enumerate}
+Note that SNI contains the actual data name in the end,
 so once receiving this interest,
 a node can immediately send this status change to upper and lower level without extra delay.
 
 \subsubsection{Anything New Interest}
 To get synchronization control records,
-every node sends periodically \emph{Anything New Interest} to his server with the newest label on behalf of his status.
+every node sends periodically ANI to his server with the newest label on behalf of his status.
 When a server receives this interest,
 he compares the carried label with his own latest label. There are three cases here:
-(1) The received label is the same as his own.
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item The received label is the same as his own.
 In such case, he saves this interest as pending interest,
 so that he can reply immediately when his status changes.
-(2) The received label is older than the his own.
+	\item The received label is older than the his own.
 In this manner, he compares the record's time and find the first index
 in the Record Container that is newer than the given label.
 Then he sends back the new records.
-(3) There is not any record in his Record Container
+	\item There is not any record in his Record Container
 that shares the same user name as the received label.
 In this situation, the server has to send back all the records for synchronization.
+\end{enumerate}
 When the client receives data for Anything New Interest, he will do the following things:
-(1) extracts records from the data.
-(2) updates his own Record Container.
-(3) processes pending interest.
-(4) sends data interest to fetch real data.
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item extracts records from the data.
+	\item updates his own Record Container.
+	\item processes pending interest.
+	\item sends data interest to fetch real data.
+\end{enumerate}
 
 In general, a server is in charge of inner group synchronization,
 so every record in the group contains a label of the server.
 So in regular case, the clients only send his server's latest label.
 When the system is stable and all nodes share the same status,
-all \emph{Anything New Interest}s are the same and thus they can be aggregated by NDN routers.
+all ANIs are the same and thus they can be aggregated by NDN routers.
 Data back can transmit efficiently along the reverse path of interest.
 When a node moves to another place or the server fails, the node will connect to a new server.
 In this situation, the last server's label is of no use,
@@ -360,8 +389,8 @@ Actual data fetching is acted in distributed way.
 This design minimizes the messages that travel between server and client,
 and takes fully advantages of NDN's distributed features such as interest aggregation and caches.
 
-When receiving \emph{Something New Interest} or \emph{Anything New Data},
-a participant updates his \emph{Record Container} and send \emph{Data Interest} to fetch actual data.
+When receiving SNI or data from ANI,
+a participant sends DI to fetch actual data.
 As described above, everyone stores his self-generated data for the sake of replying others' data fetching interest.
 They don't need to store the fetched data from others,
 because they only care about whether they have received it or not.
@@ -375,15 +404,17 @@ because they only care about whether they have received it or not.
 \label{mobility_pic}
 \end{figure}
 Our proposed model can provide natural robustness and mobility support.
+
 When a node goes off-line and returns after some time and connects to the same server,
 he will send his latest status, which can be recognized easily by the server,
 since that the server can just compare the time in the label with his own record numerically,
-find all the new one, and reply to the client.
+find all new messages, and reply to the client.
 When a node move, whether it is caused by link failure,
 server failure or the actual move in topology, there are three situations.
-(1) he moves to another place, but connects to the same server.
+\begin{enumerate}{\IEEEsetlabelwidth{12}}
+	\item he moves to another place, but connects to the same server.
 In this manner, he can communicate with the server and fetch new things without any affection.
-(2) he moves to another place, but connects to a different server.
+	\item he moves to another place, but connects to a different server.
 Chances are that he and the new server share a same upper level server
 \footnote{actually the Top Level Server is always shared by the nodes,
 but chances are high that a shared upper level server not far away is available
@@ -394,23 +425,26 @@ For instance, as shown in Figure \ref{mobility_pic},
 assume that Mary moves close to Bob and connects to him.
 She can not use her former server, Cindy's label now.
 However, she and Bob hold Alice's label together, thus Bob can still recognize her.
-(3) When the node is moved to a completely new environment that even the Top Level Server is not the same.
+	\item When the node is moved to a completely new environment that even the Top Level Server is not the same.
 This may be caused by contemporary partition or permanent one,
 which means the two groups never connect to each other. This situation is extreme,
 and the node has to exchange all the messages.
 However, in deed it is not reasonable to handle this condition.
+\end{enumerate}
 
 \subsection{Trouble Shooting}
 \label{trouble_shooting}
 Clients send heat beat interest to detect connection failure.
 When detected, the client will reset his server and enter server generation period.
 There are two situations here, the server is down and the client is down.
+
 In the first manner, the server is off-line,
 so the clients in the group will soon select another one to substitute him after the detection.
 If there are higher level servers,
 the newly selected server will surely connect to the upper server by sending another
-\emph{Any Server Interest} with a bigger level, reverting the system to stable architecture.
-In the second manner,
+ASI with a bigger level, reverting the system to stable architecture.
+
+In the second one,
 we consider a more general condition that a small group disconnected
 with the outside world for a while.
 The participants inside the group can still communicate with each other in this case,
@@ -440,7 +474,11 @@ Then we will evaluate the performance on both packet overhead and delay.
 To be more general, We use the 5x5 grid topology in our simulation,
 as shown in Figure \ref{paper_topo}.
 Every node in the grid represents a participant in the synchronization system,
-thus there are totally 25 nodes. The server is randomly selected, as described before.
+thus there are totally 25 nodes.
+The figure may seem simple,
+but it actually contains nodes with 6 different environments and a max hop count of 8.
+We think this topology can represent a general topology well.
+The tree topology is randomly selected, as described before.
 All links are symmetrical with link delay of 10ms and 1Mbps bandwidth.
 We let participants randomly generate data,
 and we change the frequence of the generation to see the trend.
@@ -475,7 +513,7 @@ the synchronization control messages should go through several servers to reach 
 \subsubsection{Overhead}
 \begin{figure}[!t]
 \centering
-\includegraphics[width=2.5in]{../png/all-incoming-interest.png}
+\includegraphics[width=2.5in]{../png/all-incoming-interest-revised.png}
 \caption{Incoming Interest Count for All the Nodes}
 \label{overhead}
 \end{figure}
@@ -501,7 +539,7 @@ From the view of proportion that consists the interests,
 as you can see in Figure \ref{recovery_percentage},
 the percentage that the receiver will eventually send recovery interest
 when receiving a sync interest is much higher when data generation frequency increase.
-However, Something New Interest remains the same ratio with Anything New in DRSTL.
+However, Something New Interest remains the same ratio with Anything New in TreeSync.
 
 \subsubsection{Delay}
 Since control messages should go through multi-level servers in our design,
@@ -517,7 +555,7 @@ but is still pretty good. Take the gained high control ability into consideratio
 the sacrifice is worthy.
 \begin{figure}[!t]
 \centering
-\includegraphics[width=2.5in]{../png/delay-compare.png}
+\includegraphics[width=2.5in]{../png/delay-compare-revised.png}
 \caption{Delay Compare}
 \label{delay_compare}
 \end{figure}
@@ -564,42 +602,87 @@ there will be lots of simultaneous data generation.
 \section{Conclusion}
 \label{conclusion}
 In this paper, we proposed a new protocol to handle the synchronization problem in multi-user applications.
-Our design, Distributed Random Servers with Timed Labels,
-take advantages of both traditional server-based model and NDN's neat and efficient distributed features.
-(1) Multi-Level servers can provide enough control ability to handle complex conditions;
-(2) The essential distributed features allow it to fetch data efficiently with little overhead;
-(3) The hierarchy structure allows the server to control the synchronization by his local time label,
-which is easy and natural to process compared to using digest.
-We have implemented our protocol over ndnSIM and evaluated the performance.
-Data fetching is fast by a distributed way in NDN.
+TreeSync takes advantages of both traditional server-based model and NDN's neat and efficient distributed features.
+First of all, Multi-level controllers can provide enough control ability to handle complex conditions;
+Secondly, The essential distributed features allow it to fetch data efficiently and robustly with little overhead;
+Besides, The hierarchy structure makes the algorithm scalable.
+We have implemented TreeSync over ndnSIM and evaluated the performance.
+Message is correctly and fast synchronized in a distributed way.
 With a reasonable delay of sync control message transmission,
 the overhead is much lower due to powerful control ability.
 
 Some further topics worth researching include:
 (1) minimizing within-level delays,
 (2) generating sever by some better algorithms to generate a hierarchy structure
-that best fits each specific topology. We will continue focusing on them in the future.
+that best fits each specific topology.
 
+\end{document}
 
 \begin{thebibliography}{1}
 
-\bibitem{NDN001}
-	Zhang, L., Estrin, D., Burke, J., Jacobson, V., Thornton, J. D., Smetters, D. K., ... \& Yeh, E. (2010). Named data networking (ndn) project. Relatório Técnico NDN-0001, Xerox Palo Alto Research Center-PARC.
 \bibitem{FIA}
-	``NSF Future Internet Architecture Project'', http://www.nets-fia.net
+``NSF Future Internet Architecture Project'', http://www.nets-fia.net
+\bibitem{NDN001}
+Zhang, L., Estrin, D., Burke, J., Jacobson, V., Thornton, J. D., Smetters, D. K., ... \& Yeh, E. (2010).
+Named data networking (ndn) project. Relatório Técnico NDN-0001, Xerox Palo Alto Research Center-PARC.
 \bibitem{ChronoSync}
-	Zhu, Z., \& Afanasyev, A. (2013). Let’s ChronoSync: Decentralized Dataset State Synchronization in Named Data Networking. In Proceedings of the 21st IEEE International Conference on Network Protocols (ICNP 2013).
+Zhu, Z., \& Afanasyev, A. (2013).
+Let’s ChronoSync: Decentralized Dataset State Synchronization in Named Data Networking.
+In Proceedings of the 21st IEEE International Conference on Network Protocols (ICNP 2013).
 \bibitem{ndnSIM}
-	Afanasyev, A., Moiseenko, I., \& Zhang, L. (2012). ndnSIM: NDN simulator for NS-3. University of California, Los Angeles, Tech. Rep.
+Afanasyev, A., Moiseenko, I., \& Zhang, L. (2012).
+ndnSIM: NDN simulator for NS-3. University of California, Los Angeles, Tech. Rep.
 \bibitem{ns3}
-	``ns-3: a discrete-event network simulator for Internet systems.'', http://www.nsnam.org
+``ns-3: a discrete-event network simulator for Internet systems.'', http://www.nsnam.org
 \bibitem{OSPF}
-	Moy, J. (1998). Open shortest path first (ospf) version 2. IETF: The Internet Engineering Taskforce RFC, 2328.
+Moy, J. (1998). Open shortest path first (ospf) version 2. IETF: The Internet Engineering Taskforce RFC, 2328.
 \bibitem{OSPFN}
-	Wang, L., Hoque, A. K. M. M., Yi, C., Alyyan, A., \& Zhang, B. (2012). OSPFN: An OSPF based routing protocol for Named Data Networking. University of Memphis and University of Arizona, Tech. Rep.
+Wang, L., Hoque, A. K. M. M., Yi, C., Alyyan, A., \& Zhang, B. (2012).
+OSPFN: An OSPF based routing protocol for Named Data Networking.
+University of Memphis and University of Arizona, Tech. Rep.
 \bibitem{LRU}
-	Johnson, T., \& Shasha, D. (1994). X3: A Low Overhead High Performance Buffer Management Replacement Algorithm.
-
+Johnson, T., \& Shasha, D. (1994).
+X3: A Low Overhead High Performance Buffer Management Replacement Algorithm.
 \end{thebibliography}
 
 \end{document}
+
+
+% obsolate
+\section{obsolate}
+\label{sec:section label}
+
+\subsection{Data Structure}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=2.5in]{../png/data-structure.png}
+\caption{Data Structure}
+\label{data_structure}
+\end{figure}
+In this section,
+we describe the data structure used for storing and processing synchronization messages.
+
+As shown in Figure \ref{data_structure}, there are two data structures in every node, name
+y Message Container and Record Container.
+Message Container stores the actual data generated by this participant.
+Keep in mind that participant doesn't need to store everyone else's messages.
+They only care about whether they have received all the others' messages.
+However, it is the publisher's responsibility to store his own published messages
+for the sake of replying the actual data request interest from others.
+Record Container holds the synchronization control records.
+A timed label is the pair of a user name and his time.
+A record holds a data name and all the labels on behalf of the dataname.
+A record container consists of two parts, namely \emph{Record Vector} and \emph{NameTimeIndex}.
+The \emph{Record Vector} is an array of the records by sequence,
+so that their indexes can tell which is newer.
+The \emph{NameTimeIndex} structure is a dual map.
+It is use to find the first index that is newer than a provided label contains a name and time.
+The index is the one that used in \emph{Record Vector}.
+
+Note that every label about a record contains a user name and user time,
+thus there's no problem when different participants use different time criteria.
+Also, since that the record only contains labels from the participants' upper-level servers,
+and the top level is a small constant number, we don't need to worry about a huge amount of labels.
+What's more, when a server is down, his labels will never be updated again,
+so we can use some algorithm like Least Recent Use(LRU)\cite{LRU} to delete useless labels. One more thing,
+this design provide support for node failure and node mobility, which is referred in Section \ref{mobility}.
