@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2014.4.20)  8 MAY 2014 17:26
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2014.4.20)  9 MAY 2014 22:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**drstl.tex
-(./drstl.tex
+**TreeSync.tex
+(./TreeSync.tex
 LaTeX2e <2011/06/27>
 Babel <3.9f> and hyphenation patterns for 78 languages loaded.
 (./IEEEtran.cls
@@ -188,8 +188,8 @@ fil }\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi
 \c@lotdepth=\count99
 \sf@top=\skip56
 \sf@bottom=\skip57
-) (./drstl.aux)
-\openout1 = `drstl.aux'.
+) (./TreeSync.aux)
+\openout1 = `TreeSync.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
 LaTeX Font Info:    ... okay on input line 12.
@@ -276,93 +276,120 @@ LaTeX Warning: No \author given.
 
 
 ]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 225.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 225.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 230.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 230.
+<../png/simultaneous.png, id=10, 1606.0pt x 1204.5pt>
+File: ../png/simultaneous.png Graphic file (type png)
 
-<../png/server-generation.png, id=10, 365.365pt x 262.9825pt>
+<use ../png/simultaneous.png>
+Package pdftex.def Info: ../png/simultaneous.png used on input line 136.
+(pdftex.def)             Requested size: 252.94499pt x 189.70975pt.
+
+Underfull \hbox (badness 3954) in paragraph at lines 137--137
+[]\OT1/ptm/m/n/10 Fig. 1: |Si-mul-ta-ne-ous Mes-sage Gen-er-a-tion Prob-lem on
+ []
+
+[2 <../png/simultaneous.png>]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 271.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 271.
+
+<../png/server-generation.png, id=16, 365.365pt x 262.9825pt>
 File: ../png/server-generation.png Graphic file (type png)
 
 <use ../png/server-generation.png>
-Package pdftex.def Info: ../png/server-generation.png used on input line 257.
+Package pdftex.def Info: ../png/server-generation.png used on input line 286.
 (pdftex.def)             Requested size: 180.67499pt x 130.04631pt.
 
-Underfull \vbox (badness 2326) has occurred while \output is active []
-
- [2]
-<../png/synchronization.png, id=15, 625.33624pt x 381.425pt>
+<../png/synchronization.png, id=17, 625.33624pt x 381.425pt>
 File: ../png/synchronization.png Graphic file (type png)
 
 <use ../png/synchronization.png>
-Package pdftex.def Info: ../png/synchronization.png used on input line 305.
-(pdftex.def)             Requested size: 180.67499pt x 110.203pt.
-
-<../png/tree-synchronization.png, id=16, 666.49pt x 474.77374pt>
+Package pdftex.def Info: ../png/synchronization.png used on input line 293.
+(pdftex.def)             Requested size: 325.215pt x 198.37123pt.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 317.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 317.
+ [3 <../png/server-generation.png>]
+<../png/tree-synchronization.png, id=24, 666.49pt x 474.77374pt>
 File: ../png/tree-synchronization.png Graphic file (type png)
 
 <use ../png/tree-synchronization.png>
-Package pdftex.def Info: ../png/tree-synchronization.png used on input line 311
+Package pdftex.def Info: ../png/tree-synchronization.png used on input line 373
 .
-(pdftex.def)             Requested size: 180.67499pt x 128.69772pt.
- [3 <../png/server-generation.png> <../png/synchronization.png> <../png/tree-sy
-nchronization.png>]
-<../png/mobility.png, id=25, 739.76375pt x 613.29124pt>
+(pdftex.def)             Requested size: 325.215pt x 231.67041pt.
+ [4 <../png/synchronization.png>]
+<../png/mobility.png, id=29, 739.76375pt x 613.29124pt>
 File: ../png/mobility.png Graphic file (type png)
 
 <use ../png/mobility.png>
-Package pdftex.def Info: ../png/mobility.png used on input line 402.
-(pdftex.def)             Requested size: 180.67499pt x 149.78508pt.
- [4 <../png/mobility.png>]
-<../png/paper-topo.png, id=30, 321.2pt x 249.93375pt>
+Package pdftex.def Info: ../png/mobility.png used on input line 463.
+(pdftex.def)             Requested size: 325.215pt x 269.61502pt.
+ [5 <../png/tree-synchronization.png>]
+<../png/merit.png, id=34, 1606.0pt x 1204.5pt>
+File: ../png/merit.png Graphic file (type png)
+ <use ../png/merit.png>
+Package pdftex.def Info: ../png/merit.png used on input line 528.
+(pdftex.def)             Requested size: 180.67499pt x 135.49121pt.
+ [6 <../png/mobility.png> <../png/merit.png>]
+<../png/paper-topo.png, id=40, 321.2pt x 249.93375pt>
 File: ../png/paper-topo.png Graphic file (type png)
 
 <use ../png/paper-topo.png>
-Package pdftex.def Info: ../png/paper-topo.png used on input line 470.
+Package pdftex.def Info: ../png/paper-topo.png used on input line 571.
 (pdftex.def)             Requested size: 180.67499pt x 140.5912pt.
 
-<../png/function-delay.png, id=31, 555.07375pt x 263.98625pt>
+<../png/function-delay.png, id=41, 555.07375pt x 263.98625pt>
 File: ../png/function-delay.png Graphic file (type png)
 
 <use ../png/function-delay.png>
-Package pdftex.def Info: ../png/function-delay.png used on input line 490.
+Package pdftex.def Info: ../png/function-delay.png used on input line 591.
 (pdftex.def)             Requested size: 180.67499pt x 85.92743pt.
 
-<../png/all-incoming-interest-revised.png, id=32, 518.6878pt x 311.66437pt>
+<../png/all-incoming-interest-revised.png, id=42, 518.6878pt x 311.66437pt>
 File: ../png/all-incoming-interest-revised.png Graphic file (type png)
 
 <use ../png/all-incoming-interest-revised.png>
 Package pdftex.def Info: ../png/all-incoming-interest-revised.png used on input
- line 516.
+ line 617.
 (pdftex.def)             Requested size: 180.67499pt x 108.56104pt.
 
-<../png/portion-in-interests.png, id=33, 435.87843pt x 289.08pt>
+<../png/portion-in-interests.png, id=43, 435.87843pt x 289.08pt>
 File: ../png/portion-in-interests.png Graphic file (type png)
 
 <use ../png/portion-in-interests.png>
-Package pdftex.def Info: ../png/portion-in-interests.png used on input line 522
+Package pdftex.def Info: ../png/portion-in-interests.png used on input line 623
 .
 (pdftex.def)             Requested size: 180.67499pt x 119.8248pt.
- [5 <../png/paper-topo.png> <../png/function-delay.png> <../png/all-incoming-in
-terest-revised.png>]
-<../png/delay-compare-revised.png, id=40, 436.63126pt x 304.88907pt>
+
+<../png/delay-compare-revised.png, id=44, 436.63126pt x 304.88907pt>
 File: ../png/delay-compare-revised.png Graphic file (type png)
 
 <use ../png/delay-compare-revised.png>
-Package pdftex.def Info: ../png/delay-compare-revised.png used on input line 55
-8.
+Package pdftex.def Info: ../png/delay-compare-revised.png used on input line 65
+9.
 (pdftex.def)             Requested size: 180.67499pt x 126.15907pt.
 
-<../png/data-fetch-delay.png, id=41, 459.7175pt x 370.38374pt>
+<../png/data-fetch-delay.png, id=45, 459.7175pt x 370.38374pt>
 File: ../png/data-fetch-delay.png Graphic file (type png)
 
 <use ../png/data-fetch-delay.png>
-Package pdftex.def Info: ../png/data-fetch-delay.png used on input line 565.
+Package pdftex.def Info: ../png/data-fetch-delay.png used on input line 666.
 (pdftex.def)             Requested size: 180.67499pt x 145.56808pt.
+ [7 <../png/paper-topo.png> <../png/function-delay.png> <../png/all-incoming-in
+terest-revised.png> <../png/portion-in-interests.png>]
+Missing character: There is no Ã in font ptmr7t!
+Missing character: There is no ³ in font ptmr7t!
+Missing character: There is no Ã in font ptmr7t!
+Missing character: There is no © in font ptmr7t!
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ™ in font ptmr7t!
+
+Underfull \hbox (badness 2818) in paragraph at lines 710--711
+[]\OT1/ptm/m/n/8 ``ns-3: a discrete-event net-work sim-u-la-tor for In-ter-net 
+sys-tems.'',
+ []
 
 
 ** Conference Paper **
@@ -375,28 +402,28 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[6 <../png/portion-in-interests.png> <../png/delay-compare-revised.png> <../png
-/data-fetch-delay.png>] (./drstl.aux) ) 
+[8 <../png/delay-compare-revised.png> <../png/data-fetch-delay.png>]
+(./TreeSync.aux) ) 
 Here is how much of TeX's memory you used:
- 3662 strings out of 493315
- 60507 string characters out of 6137904
- 127752 words of memory out of 5000000
- 7084 multiletter control sequences out of 15000+600000
+ 3673 strings out of 493315
+ 60769 string characters out of 6137904
+ 126769 words of memory out of 5000000
+ 7093 multiletter control sequences out of 15000+600000
  37551 words of font info for 71 fonts, out of 8000000 for 9000
  960 hyphenation exceptions out of 8191
- 44i,8n,43p,239b,253s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2013/texmf-dist/font
-s/enc/dvips/base/8r.enc}</usr/local/texlive/2013/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmmi10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmmi7.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmr7.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utm
-b8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb><
-/usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local
-/texlive/2013/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on drstl.pdf (6 pages, 251234 bytes).
+ 44i,8n,43p,242b,253s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/base/8r.e
+nc}</usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pf
+b></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb>
+</usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></u
+sr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/t
+exlive/2013/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/20
+13/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2013/texmf-d
+ist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on TreeSync.pdf (8 pages, 455259 bytes).
 PDF statistics:
- 71 PDF objects out of 1000 (max. 8388607)
- 37 compressed objects within 1 object stream
+ 83 PDF objects out of 1000 (max. 8388607)
+ 43 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 51 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 61 words of extra memory for PDF output out of 10000 (max. 10000000)
 
