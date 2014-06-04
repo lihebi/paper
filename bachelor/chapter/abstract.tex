@@ -1,0 +1,31 @@
+﻿
+\begin{cnabstract}
+作为新一代因特网架构，NDN网络提供了很多新的特性，使传统的IP网络的诸多缺点的得以克服。
+群聊软件，如QQ群聊，视频会议等，需要保证群体中的每个人都能收到其他所有人所发布的消息。
+传统因特网需要有一台中央服务器，收集每个人的消息，并推送给其他人。
+这种结构存在严重的overhead，较长的实验，并且鲁棒性不强。
+本研究课题充分利用NDN网络分布式的特点，并利用缓存和interest聚合实现数据同步的算法。
+
+\keywords{NDN，消息同步}
+\end{cnabstract}
+
+
+\begin{enabstract}
+
+Key problem of multi-user real-time communication applications,
+such as group chat and video conference,
+is how to synchronize messages among all participants.
+Traditional IP-based way depends on central server, resulting in unbalanced link burden and robust problem.
+A recent solution on NDN, ChronoSync, has several crucial limitations.
+In this paper, we propose a new distributed algorithm based on Named Data Network to address this problem.
+In our design, the system generates a tree topology according to the real one.
+Every node takes responsibility to synchronize its children and bubble messages up to its parent.
+On receiving control messages from upper node,
+participants send request to the real message directly, taking advantage of NDN's consumer-driven design.
+This method synthesizes the powerful control ability of servers and NDN's distributed features.
+We implemented TreeSync on ndnSIM and compared it with ChronoSync.
+It proved small overhead and fast synchronization.
+
+
+\enkeywords{NDN, Message Synchronization}
+\end{enabstract}

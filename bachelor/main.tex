@@ -1,0 +1,157 @@
+﻿\documentclass[bachelor,euler,twoside,openright]{ustcthesis}
+% 默认twoside 双面打印
+% 将master修改为bachelor, doctor or master
+% 要使用adobe字体，添加adobefonts选项
+% 使用euler数学字体，如不愿使用，去掉euler
+% 使用外文写作，请添加notchinese
+
+% 设置图形文件的搜索路径
+\graphicspath{{figures/}}
+
+%仅用于本示例文档中显示特殊字符串
+\usepackage{xltxtra}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 封面部分
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  % 中文封面内容
+  \title{基于NDN网络的时间标签多层随机服务器同步算法}%一般情况下扉页和书脊共用一个标题文本，可以不用定义\spinetitle。特殊情况见下。
+  \spinetitle{\small{基于NDN网络的时间标签多层随机服务器同步算法}}
+  %特殊情况1：本例中\title命令里含有换行控制字符，这会导致制作书脊的时候出现错误，
+  %  例如如果你注释掉\spinetitle{...}这一行就会报错。
+  %  这时需要定义一个不含换行等命令的\spinetitle，这并不表示\spinetitle里不能有任何命令——只能使用有限的命令。
+  %特殊情况2：本例中标题过长，所以需要缩小书脊标题的字号。
+  %特殊情况3：本例中中英文混排，由于tex竖排的原理限制，中英文基线不重合，所以需要人工调整英文的基线。具体调整量根据不同字体有所不同。
+  \author{李\ 合\ 璧}
+  \depart{自动化系}%系别，硕博请用系代号，本科请用全称如
+  \major{自动化}%专业，硕博请用全称，本科不需要
+  \studentid{PB10210014}
+  \advisor{谭小斌\ 副教授}
+  \submitdate{二〇一四年六月}
+
+  % 英文封面内容
+  \entitle{Distributed Random Servers With Timed Labels for Synchronization over Named Data Network}
+  \enauthor{Hebi Li}
+  \enmajor{Automation}
+\endepart{Automation}
+  \enadvisor{Prof. Xiaobin Tan}
+  \ensubmitdate{June, 2014}
+
+\begin{document}
+
+  \maketitle
+
+%特别注意，以下述顺序为准，在对应部分添加文档部件，切勿颠倒顺序：
+%本科论文的文档部件顺序是：
+%    frontmatter：致谢、目录、中文摘要、英文摘要、
+%    mainmatter： 正文章节
+%    backmatter： 参考文献或资料注释、附录
+%硕博论文的文档部件顺序是：
+%    frontmatter：中文摘要、英文摘要、目录、符号说明
+%    mainmatter： 正文章节
+%    backmatter： 参考文献、附录、致谢、发表论文
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 前言部分
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frontmatter
+\makeatletter
+\ifustc@bachelor
+	%%%%%%%%%%%%%%%%%
+	%本科论文修改这里
+	%%%%%%%%%%%%%%%%%
+	% 致谢
+	\include{chapter/thanks}
+
+	%目录部分
+	%目录
+	\tableofcontents
+	%默认表格、插图、算法索引名称分别为“表格索引”、“插图索引”和“算法索引”
+	%如果需要自行修改lot，lof，loa的名称，请定义
+	%\ustclotname{...}
+	%\ustclofname{...}
+	%\ustcloaname{...}
+
+	% % 表格索引
+	% \ustclot
+	% % 插图索引
+	% \ustclof
+	% %算法索引
+	% %如果需要使用算法环境并列出算法索引，请加入补充宏包。
+	% \ustcloa
+
+	% 摘要
+	\include{chapter/abstract}%此文件中含有中英文摘要
+\else
+	%%%%%%%%%%%%%%%%%
+	%硕博论文修改这里
+	%%%%%%%%%%%%%%%%%
+	% 摘要
+	\include{chapter/abstract}%此文件中含有中英文摘要
+	% 目录
+	\tableofcontents
+	%默认表格、插图、算法索引名称分别为“表格索引”、“插图索引”和“算法索引”
+	%如果需要自行修改lot，lof，loa的名称，请定义
+	%\ustclotname{...}
+	%\ustclofname{...}
+	%\ustcloaname{...}
+
+	% 表格索引
+	\ustclot
+	% 插图索引
+	\ustclof
+	%算法索引
+	%如果需要使用算法环境并列出算法索引，请加入补充宏包。
+	\ustcloa
+
+	%符号说明，需要加入补充包
+	\include{chapter/denotation}%不是必需的，如果不想列出请注释掉
+\fi
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 正文部分
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter
+
+  % \include{chapter/chap-intro}
+  % \include{chapter/chap-guide}
+  % \include{chapter/chap-example}
+  %自行添加
+  %\include{chapter/...}
+  \include{chapter/intro}
+  \include{chapter/ndn}
+  \include{chapter/relatedwork}
+  \include{chapter/design}
+  \include{chapter/simu}
+  \include{chapter/conclude}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 附件部分
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter
+
+  % 参考文献
+  % 使用 BibTeX
+  % 选择参考文献的排版格式。注意ustcbib这个格式不保证完全符合要求，请自行决定是否使用
+  \bibliographystyle{ustcbib}%{GBT7714-2005NLang-UTF8}
+  \bibliography{bib/tex}
+  \nocite{*} % for every item
+  % 不使用 BibTeX
+  % \include{chapter/bib}
+
+  % 附录，没有请注释掉
+  % \begin{appendix}
+  %   \include{chapter/chap-req}
+  % \end{appendix}
+
+  \makeatletter
+  \ifustc@bachelor\relax\else
+    % 致谢
+	\include{chapter/thanks}%硕博致谢部分
+    % 发表文章目录
+    \include{chapter/pub}
+  \fi
+  \makeatother
+
+\end{document}
