@@ -1,6 +1,55 @@
-\chapter{设计}
+\chapter{TreeSync的设计}
+\label{chapter:design}
 
 % 4.1
+\section{设计背景}
+在本章中,首先分析IP网络和现有NDN解决方案ChronoSync的不足,然后提出我们的设计目标.
+\subsection{IP网络的弊端}
+IP网络是一个点到点的模型,这意味着每次传输数据时,
+路由器并不知道传递的内容是什么,而是按照数据包的源IP和目的IP来转发.
+当一个内容由两个用户请求时,该内容必须沿着两个已经建立的连接分别传输到这两个用户,不管他们的距离有多近.
+这造成了严重的链路浪费:相同的链路上不停地经过相同的数据包.
+
+在IP网络中,实现分布式的信息交换是很困难的,
+因为要想让每一个客户都能将自己产生的数据发送给群体中得所有人,
+他必须维护所有其他人的IP地址信息列表,这在互联网中是不现实的.
+
+因此,现有的IP网络中得群聊应用均是建立在中央服务器的基础上,所有人和中央服务器建立连接,将新消息发送给服务器.
+服务器将新消息做汇总,并传递给所有参与者.
+此方案带来了严重的链路过载,相同的消息沿着每一条TCP连接到达客户端,同一条链路中不停地通过相同的数据包.
+另外,这种方案也带来了链路负载的不均衡.靠近中央服务器的链路负载往往非常巨大,而靠近客户端的链路又几乎没有负载.
+另一个缺点是该系统的稳定性.由于中央服务器的存在,导致系统存在单点故障隐患.
+一旦中央服务器宕机,或者被恶意攻击,整个系统将会崩溃,无法继续完成消息同步的功能.
+\subsection{ChronoSync解决方案的不足}
+作为分布式消息同步的尝试,ChronoSync提供了NDN上得解决方案.
+ChronoSync的设计是完全分布式的,每一个用户向该群体里广播兴趣包,用以拉回新产生的数据.
+在NDN中,数据是以名字唯一命名的,因此,
+相同的兴趣包不会在同一个链路中传输多次,返回的内容也会沿着相同的路径反向到达客户端.
+实验也验证了相对于IP网络传统解决方案的巨大优越性.
+
+然而,ChronoSync存在如下严重的不足.
+首先,ChronoSync对于特殊情况的解决没有控制能力.
+最主要的是当有消息同时产生时,由于NDN中每一个兴趣包只能拉回一个数据,这时系统就会被分成不能相互认识的两个部分,而无法再相互通讯.
+这时候只能通过发送恢复兴趣包来修复此问题.
+
+另一个ChronoSync的设计不足是它无法扩展到大范围的应用.
+由于ChronoSync是将兴趣包向全网广播,没有层级结构,这就必然没有可伸缩性,只能在小范围内使用.
+
+\subsection{设计目标}
+针对现有IP网络和现有NDN解决方案ChronoSync的不足,我们以如下几点作为我们的设计目标:
+\begin{enumerate}
+  \item 必须是分布式的。这样才能是系统更健壮，鲁棒性更强。
+  \item 有能力处理特殊情况，包括多个并发的消息。
+  \item 要能在大范围内进行扩展。
+\end{enumerate}
+
+\section{设计思路}
+为了得到更强大的控制能力,显然不能放任客户端自己来发送和同步消息.
+故而需要有节点来将收到的消息通知进行排序整理,并通知其子节点相关的信息.
+这种控制节点的出现会打破分布式的特性,所以这些节点不能是固定的,而是随机产生的.
+无论何时,何种控制节点下线或宕机了,系统需要能从这个故障中恢复,即产生另外一个控制节点代替此节点继续工作.
+为了具有可伸缩性,系统的拓扑需要是层级形式的,以便系统的复杂度与客户端数目指数递减.
+由此,我们设计了具有树形拓扑的随机多层控制器的TreeSync来解决此问题.
 
 \section{设计概述}
 在这小节中，我们将要简要讨论整个同步过程。后面的章节将会详细讲述同步的各个部分的细节。
@@ -69,18 +118,18 @@
 
 \begin{table}
 \renewcommand{\arraystretch}{1.3}
-\caption{Interests' Names}
-\label{interest_name}
+\caption{使用到的兴趣包的名字}
+\label{table:only}
 \centering
 \begin{tabular}{|c|c|}
 \hline
-Any Server Interest & /broadcast/treesync/anyserver/\emph{level}\\
+控制节点询问包(ASI) & /broadcast/treesync/anyserver/\emph{level}\\
 \hline
-Something New Interest & /\emph{serverName}/treesync/somethingnew/\emph{mylabel}/\emph{dataName}\\
+新消息通知兴趣包(SNI) & /\emph{server}/treesync/somethingnew/\emph{mylabel}/\emph{dataName}\\
 \hline
-Anything New Interest & /\emph{serverName}/treesync/anythingnew/\emph{label1:label2:label3}\\
+同步兴趣包(ANI) & /\emph{server}/treesync/anythingnew/\emph{label1:label2:label3}\\
 \hline
-Data Interest & /\emph{publisherName}/treesync/\emph{time}\\
+数据请求兴趣包(DI) & /\emph{publisherName}/treesync/\emph{time}\\
 \hline
 \end{tabular}
 \end{table}
@@ -89,7 +138,7 @@ Data Interest & /\emph{publisherName}/treesync/\emph{time}\\
 在这一章，我们简要描述我们在设计中所使用的所有兴趣包的名字。
 后面的章节将会分别详细讲述这些兴趣包的用途。
 
-我们的设计中总共有四中兴趣包的名字。
+如表\ref{table:only}所示,我们的设计中总共有四中兴趣包的名字。
 Anything New Interest 用于产生控制器树形拓扑。
 Something New Interest 和 Anything New Interest 用于控制消息的传输。
 Data Interest 用来获取真正的消息实体。
@@ -108,9 +157,9 @@ Data Interest 用来获取真正的消息实体。
 
 \begin{figure}
 \centering
-\includegraphics[width=4.5in]{png/server-generation.png}
-\caption{Server Generation}
-\label{server_generation}
+\includegraphics[width=3.5in]{png/server-generation.png}
+\caption{控制节点的产生过程}
+\label{fig:topo_gen}
 \end{figure}
 
 为了产生控制器，我们将使用“Anything New Interest”。
@@ -137,6 +186,11 @@ Data Interest 用来获取真正的消息实体。
 这就使得经过控制器的延迟不会比直接传递的延迟有显著的增加。
 从而保证了传输时延性能。
 
+例如,图\ref{fig:topo_gen},假设当前Bob的层级为2,那么他发送ASI给周围时,
+由于Mary和Alice的层级并不大于2,所以都不会回复这个兴趣包.
+当兴趣包到达Cindy,由于Cindy的层级为3,可以回复此兴趣包,故Cindy满足此兴趣包.
+当Bob收到这个返回的数据时,将自己的控制节点设置为Cindy,并向她索取控制信息.
+
 
 
 \section{同步过程}
@@ -144,19 +198,19 @@ Data Interest 用来获取真正的消息实体。
 \begin{figure}
 \centering
 \includegraphics[width=4.5in]{png/synchronization.png}
-\caption{Synchronization and Data Fetching}
-\label{synchronization}
+\caption{同步消息传递过程和消息本体的获取}
+\label{fig:sync_process}
 \end{figure}
 
 
 本章，我们将描述在系统中到底是如何同步的。
-如图所示，子节点向其父节点发送SNI来通知他有一个新的消息。
+如图\ref{fig:sync_process}所示，子节点向其父节点发送SNI来通知他有一个新的消息。
 控制节点然后会回复他保存的待决定的ANI，其中包含这个新的消息。
-参与者通过分布式的方式获取消息实体。图4显示了多层拓扑的同步。
+参与者通过分布式的方式获取消息实体。图\ref{fig:multi_sync}显示了多层拓扑的同步。
 每个节点都会通过发送SNI和满足ANI来向上和向下传递控制信息。
 
-\subsection{Something New Interest}
-当一个节点产生一个新的消息，或者他收到来自下层节点的SNI，他会将此消息向上传递给自己的控制节点。
+\subsection{新消息通知兴趣包}
+当一个节点产生一个新的消息，或者他收到来自下层节点的Something New Interest(SNI)，他会将此消息向上传递给自己的控制节点。
 
 当一个参与者产生一个新的数据，他将会做下面这些事：
 \begin{enumerate}
@@ -168,8 +222,8 @@ Data Interest 用来获取真正的消息实体。
 
 注意到SNI在其后面包含了真是的数据名字，所以当控制节点收到此SNI后，他可以立即将这个消息向上或者向下传递。
 
-\subsection{Anything New Interest}
-为了得到控制信息，每一个节点都会周期性的向他的控制节点发送带有他当前最新标签的ANI。
+\subsection{同步兴趣包}
+为了得到控制信息，每一个节点都会周期性的向他的控制节点发送带有他当前最新标签的Anything New Interest(ANI)。
 当一个控制节点收到这个兴趣包时，他会将其中包含的标签信息和他自己的最新标签做对比。
 有如下三种情形：
 \begin{enumerate}
@@ -201,8 +255,8 @@ Data Interest 用来获取真正的消息实体。
 \begin{figure}
 \centering
 \includegraphics[width=4.5in]{png/tree-synchronization.png}
-\caption{Multi-Level Synchronization}
-\label{tree_synchronization}
+\caption{跨层的数据同步示意图}
+\label{fig:multi_sync}
 \end{figure}
 
 \section{消息本体获取}
@@ -221,8 +275,8 @@ Data Interest 用来获取真正的消息实体。
 \begin{figure}
 \centering
 \includegraphics[width=4.5in]{png/mobility.png}
-\caption{Robustness and Mobility Support}
-\label{mobility_pic}
+\caption{鲁棒性和移动性支持}
+\label{fig:mobility}
 \end{figure}
 
 \subsection{鲁棒性}
@@ -247,6 +301,9 @@ Data Interest 用来获取真正的消息实体。
   然而,由于多层控制节点是和实际拓扑紧密相关的,很有可能的是,他和新的控制节点共享同一个更上层的控制器.
   这时候,他只需要把自己上层的所有节点的标签发送给新的控制器,就可以保证能继续同步.
   事实上,每个节点最终应该会共享至少顶层控制器.
+  例如,在图\ref{fig:mobility}中,如果Mary移动了,并且到Bob旁边,她将连接上Bob,作为其控制节点.
+  此时,Mary不能再用Cindy的标签进行同步,但是,Mary可以使用与Bob共享的Alice的标签做同步.
+  因为Bob和Mary都持有Alice的标签,他们可以相互认识并继续同步.
   \item 该节点移动到一个完全陌生的环境,连顶层节点也不是共享的.
   这可能是由于暂时或永久的隔离引起的.
   考虑这种情况过于极端,因为如果顶层节点不相同,那么实际拓扑也是断的,即没有一条链路是可以让这两个群体相互通讯的.
@@ -262,11 +319,11 @@ Data Interest 用来获取真正的消息实体。
 \centering
 \includegraphics[width=4.5in]{png/merit.png}
 \caption{处理并发消息的产生}
-\label{merit}
+\label{fig:merit}
 \end{figure}
 
 TreeSync的设计使得他有很强的控制能力.
-考虑图\ref{merit},我们考虑如下三种情况:从上层来的两个并发消息;一个上层和一个下层消息;两个从其子节点来的下层消息.
+考虑图\ref{fig:merit},我们考虑如下三种情况:从上层来的两个并发消息;一个上层和一个下层消息;两个从其子节点来的下层消息.
 
 当Tom和Mary同时产生了消息,Tom的消息会直接通过回复Alice的ANI而到达Alice.
 当Mary的消息到达Tom,他将会回复Alice的另一个ANI,从而将消息转给Alice.

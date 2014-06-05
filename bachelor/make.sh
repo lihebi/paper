@@ -4,4 +4,4 @@ sh clean.sh
 xelatex main
 bibtex main
 xelatex main
-#xelatex main
+xelatex main

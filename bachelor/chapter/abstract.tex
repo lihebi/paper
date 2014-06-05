@@ -6,6 +6,16 @@
 这种结构存在严重的overhead，较长的实验，并且鲁棒性不强。
 本研究课题充分利用NDN网络分布式的特点，并利用缓存和interest聚合实现数据同步的算法。
 
+在这篇论文中，我们提出了基于NDN网络的解决即时多人聊天应用的新的算法，TreeSync。
+TreeSync充分利用了传统中央服务器式模型和NDN的有效的分布式特性。
+
+首先，多层控制节点可以提供强大的控制能力，来处理复杂的情形。
+其次，该设计的本质的分布式特征让它能够有效率的获取消息，并且具有鲁棒性和移动性支持，享有极小的overhead。
+另外，树形结构的层级设计也为扩展性提供了保证。当节点增多时，复杂度是指数下降的。
+
+我们在ndnSIM上实现了TreeSync，并且评估了其性能。消息能够正确而快速的在群体中相互同步。
+在拥有较快同步时延的同时，overhead相对于其他算法有显著的降低。
+
 \keywords{NDN，消息同步}
 \end{cnabstract}
 
@@ -25,6 +35,16 @@ participants send request to the real message directly, taking advantage of NDN'
 This method synthesizes the powerful control ability of servers and NDN's distributed features.
 We implemented TreeSync on ndnSIM and compared it with ChronoSync.
 It proved small overhead and fast synchronization.
+
+In this paper, we proposed TreeSync, a new algorithm to handle the synchronization problem in multi-user applications.
+TreeSync takes advantages of both traditional server-based model and NDN's neat and efficient distributed features.
+First of all, Multi-level controllers can provide enough control ability to handle complex conditions;
+Secondly, The essential distributed features allow it to fetch data efficiently and robustly with little overhead;
+Besides, The hierarchy structure makes the algorithm scalable.
+We have implemented TreeSync over ndnSIM and evaluated the performance.
+Message is correctly and fast synchronized in a distributed way.
+With a reasonable delay of sync control message transmission,
+the overhead is much lower due to powerful control ability.
 
 
 \enkeywords{NDN, Message Synchronization}
