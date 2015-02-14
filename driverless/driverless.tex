@@ -1,0 +1,125 @@
+
+\documentclass{vldb}
+\usepackage{graphicx}
+\usepackage{balance}
+
+
+\begin{document}
+
+\title{Let vehicles work together:
+Towards the next generation of city transportation schedule}
+
+\numberofauthors{1}
+\author{
+\alignauthor
+Hebi Li\\
+       \affaddr{Iowa State University}\\
+       \affaddr{4300 Westbrook Dr}\\
+       \affaddr{Ames, Iowa}\\
+       \email{hebi@iastate.edu}
+}
+
+\maketitle
+
+\begin{abstract}
+We explore the scenario that, in the future, no one’s going to drive a car.
+Driverless cars are running inside the city to take people from place to place.
+How to efficiently schedule these auto-drive vehicles to reach overall the most efficiency?
+In this paper, we give the first definition of this problem.
+We propose a complete schedule algorithm to make these new format of taxis work together to reach the efficiency requirement.
+Also, we propose the Segmented RTree to solve a key challenge in the proposed schedule algorithm,
+which is general method of a category of problems.
+The extended experiments shows that our solution did a great job compared to naive solution,
+and segmented RTree overperforms the state-of-the-art query index algorithm for this category of problem.
+\end{abstract}
+
+
+
+
+\section{Introduction}
+
+We believe that driverless cars will eventually substitute the main transportation method,
+private cars, in the future. Firstly, it is safer to take a driverless car than driving manually,
+because computer is highly reliable, and will be care 24x7,
+while people are often attracted by other things, tired, or drunk.
+Google’s driverless cars have been extended experimented and prove to be extremely safe.
+People are doing research such as artificial intellegence to make the algorithm better and better.
+Secondly, it is cheaper for people to just take cars instead of buying vehicles for their own use.
+As in a survey, every family in America has averagely 2.5 cars parked in their lot.
+Besides, it is more convenient, because you can take the cars at any time from anyplace,
+no need to carry your car everywhere you go. What’s more, it is more environment friendly.
+People who have overlapped trajectory can share a car.
+It can save much energy and reduce much harmful gas.
+
+In this scenario, people will have no need to own a car and drive theirselves.
+There’re hundreds of thoudsands of cars on the street.
+When people need a travel, he just need to submit his request to the central control system,
+containing when he wants to be picked up, from where to where,
+and other requirements such as the arriving time period,
+how many times he can endure to exchange car, does he allowed sharing cars with others, etc.
+Upon receiving this request,
+the central control system should come out a complete schedule for the cars to complete this travel.
+
+While the transportation schedule problem was studied extensively in the past,
+they mainly focus on the shortest path from location to location,
+salesman problem to go through every cities exactly once at the least cost, weighted route.
+But for our problem,
+we are focusing on how to schedule hundreds of thousands of cars efficiently for
+potentially very large amount of user requests.
+Besides, we consider that cars can be shared by people who have overlapped trajectory.
+What’s more, in our scenario, we consider that people can be dropped off in the middle of the trip,
+and be picked up by another vehicle to reach the most efficiency of the whole system.
+People are incentive to do this because this can reduce the cost he need to pay for the trip.
+
+It is non-trival because both vehicle number and user request number can be very large.
+A naive solution could be that, for every user request, find the nearest free car to take him to the destination.
+The total distance of cars movement is roughly the same as people just drive their own cars to the destination.
+What’s more, It is difficult to find a car near a place at a specific time,
+not to say that we have hundreds of thousands of cars to be selected,
+and user requests are huge. People usually needs to get the schedule immediately,
+since the best car for him to use may be just 5 seconds away from him, and will pass away quickly.
+So it is highly required to work out the schedule efficiently.
+
+The critical problem in our schedule algorithm is
+how to predict which cars are near a specific location at a specific time.
+Existing solution cannot handle it very well.
+Spacial Index method such as RTree can not handle it because cars are constantly moving at their own trajectory,
+which is highly polynomial and can be changed.
+TP-Rtree reach bad efficiency.
+
+We proposed a schedule algorithm to handle this.
+
+Our contributions are concluded as follows:
+we proposed the first definition of this problem.
+we proposed a efficient algorithm towards the solution to the problem.
+we proposed segmented RTree to tackle the critical problem in the schedule algorithm to efficiently retrieve the item list in a specific region at a specific time.
+we implemented the proposed solution and experimented extensively, and it proved to be efficient and useful.
+
+The following is organized as follows:
+
+
+\section{Related Work}
+\subsection{tranporation algorithm}
+\subsection{mobile spatial index}
+
+\section{Preliminary}
+\subsection{problem definition}
+\subsection{assumption}
+
+\section{Proposed Schedule Algorithm}
+
+\section{Segmented RTree}
+
+\section{Implementation}
+
+\section{Discusion}
+
+\section{Conclusion}
+
+% ensure same length columns on last page (might need two sub-sequent latex runs)
+\balance
+
+\bibliographystyle{abbrv}
+\bibliography{driverless}  % vldb_sample.bib is the name of the Bibliography in this case
+
+\end{document}
