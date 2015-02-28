@@ -22,12 +22,12 @@ Hebi Li\\
 \maketitle
 
 \begin{abstract}
-We explore the scenario that, in the future, no one’s going to drive a car.
+We explore the scenario that, in the future, no one's going to drive a car.
 Driverless cars are running inside the city to take people from place to place.
 How to efficiently schedule these auto-drive vehicles to reach overall the most efficiency?
 In this paper, we give the first definition of this problem.
 We propose a complete schedule algorithm to make these new format of taxis work together to reach the efficiency requirement.
-Also, we propose the Segmented RTree to solve a key challenge in the proposed schedule algorithm,
+Also, we propose the Segmented RTree to solve the key challenge in the proposed schedule algorithm,
 which is general method of a category of problems.
 The extended experiments shows that our solution did a great job compared to naive solution,
 and segmented RTree overperforms the state-of-the-art query index algorithm for this category of problem.
@@ -40,10 +40,10 @@ and segmented RTree overperforms the state-of-the-art query index algorithm for 
 
 We believe that driverless cars will eventually substitute the main transportation method,
 private cars, in the future. Firstly, it is safer to take a driverless car than driving manually,
-because computer is highly reliable, and will be care 24x7,
-while people are often attracted by other things, tired, or drunk.
+because computer is highly reliable, and will stay focused 24x7,
+while people are often tired, attracted by other things, or even drunk when driving a car.
 Google’s driverless cars have been extended experimented and prove to be extremely safe.
-People are doing research such as artificial intellegence to make the algorithm better and better.
+People are doing research such as artificial intellegence to make the algorithm even better and better.
 Secondly, it is cheaper for people to just take cars instead of buying vehicles for their own use.
 As in a survey, every family in America has averagely 2.5 cars parked in their lot.
 Besides, it is more convenient, because you can take the cars at any time from anyplace,
@@ -52,13 +52,15 @@ People who have overlapped trajectory can share a car.
 It can save much energy and reduce much harmful gas.
 
 In this scenario, people will have no need to own a car and drive theirselves.
-There’re hundreds of thoudsands of cars on the street.
-When people need a travel, he just need to submit his request to the central control system,
+There're hundreds of thoudsands of cars on the street.
+When people need a travel, he just need to submit his request to the \textit{central control system},
 containing when he wants to be picked up, from where to where,
 and other requirements such as the arriving time period,
-how many times he can endure to exchange car, does he allowed sharing cars with others, etc.
+how many times he can endure to exchange car, does he allow sharing cars with others, etc.
 Upon receiving this request,
 the central control system should come out a complete schedule for the cars to complete this travel.
+
+
 
 While the transportation schedule problem was studied extensively in the past,
 they mainly focus on the shortest path from location to location,
@@ -67,9 +69,13 @@ But for our problem,
 we are focusing on how to schedule hundreds of thousands of cars efficiently for
 potentially very large amount of user requests.
 Besides, we consider that cars can be shared by people who have overlapped trajectory.
-What’s more, in our scenario, we consider that people can be dropped off in the middle of the trip,
+What's more, in our scenario, we consider that people can be dropped off in the middle of the trip,
 and be picked up by another vehicle to reach the most efficiency of the whole system.
 People are incentive to do this because this can reduce the cost he need to pay for the trip.
+This senario is like a super public transportation system,
+but is much more powerful than it.
+Bus or subway has predefined route, predefined interval,
+thus is essentially a small subset of the considered scenario.
 
 It is non-trival because both vehicle number and user request number can be very large.
 A naive solution could be that, for every user request, find the nearest free car to take him to the destination.
@@ -85,38 +91,88 @@ how to predict which cars are near a specific location at a specific time.
 Existing solution cannot handle it very well.
 Spacial Index method such as RTree can not handle it because cars are constantly moving at their own trajectory,
 which is highly polynomial and can be changed.
-TP-Rtree reach bad efficiency.
+TP-Rtree reach bad efficiency. In this paper, We propose Segmented RTree to solve it efficiently.
 
-We proposed a schedule algorithm to handle this.
+We should notice that, in spite that driverless cars in the future are our motivation to do this research,
+our problem also fits in many other applications where need similar schedule.
+For example, for a big taxi company who has a lot of vehicles nowadays,
+they can provide this service to customer for their convenience at a appealing low price.
+Also, for indexing spatial moving objects,
+our proposed segmented RTree solve an important sub problem
+by adding a common assumption that location of an object is continuous and cannot change too rapidly.
 
 Our contributions are concluded as follows:
-we proposed the first definition of this problem.
-we proposed a efficient algorithm towards the solution to the problem.
-we proposed segmented RTree to tackle the critical problem in the schedule algorithm to efficiently retrieve the item list in a specific region at a specific time.
-we implemented the proposed solution and experimented extensively, and it proved to be efficient and useful.
+\begin{itemize}
+  \item we proposed the first definition of this problem.
+  \item we proposed a efficient algorithm towards the solution to the problem.
+  \item we proposed segmented RTree to tackle the critical problem in the schedule algorithm
+  to efficiently retrieve the item list in a specific region at a specific time.
+  \item we implemented the proposed solution and experimented extensively,
+  and it proved to be efficient and useful.
+\end{itemize}
 
-The following is organized as follows:
+The following is organized as follows.
+Related work are summerized in Section \ref{related_work}.
+We provide problem definition and our assumptions in Section \ref{preliminary}.
+In Section \ref{schedule}, we discuss the proposed schedule algorithm,
+and we talk about the Segmented RTree in Section \ref{segmented_rtree}.
+Implementation and evaluation are given in Section \ref{implementation}.
+We discuss some interesting topics related to this paper in Section \ref{discussion}.
+Finally, we conclude our paper and provide future work in Section \ref{conclusion}.
 
 
 \section{Related Work}
+\label{related_work}
 \subsection{tranporation algorithm}
 \subsection{mobile spatial index}
 
 \section{Preliminary}
+\label{preliminary}
 \subsection{problem definition}
 \subsection{assumption}
+We assume control center knows info about every car.
+This includes its locations,
+current passengers and their destinations and requirements,
+and its current trajectory.
+Further, we assume that according to a (src, dest) pair,
+control center can come out the best trajectory (with consideration of traffic jam, highway, etc).
+This can be done by query a service such as google map, so its no need to reinvent a wheel.
+
+The most important assumption come to be that,
+vehicles move continously, and have a limited speed.
+In other words, cars cannot jump to another place.
+For example, cars cannot reach a 1000 miles per hour speed. 
 
 \section{Proposed Schedule Algorithm}
+\label{schedule}
 
 \section{Segmented RTree}
+\label{segmented_rtree}
 
 \section{Implementation}
+\label{implementation}
 
 \section{Discusion}
+\label{discussion}
 
 \section{Conclusion}
+\label{conclusion}
+In this paper, we consider a future scenario that driverless cars become the major transportation method.
+We provide the first definition of this problem,
+and give an efficient algorithm to schedule this large amount of cars and user requests.
+For the key challenge in our schedule algorithm,
+index spatial moving objects which has continous trajectory and whose speed has a limitation,
+we propose segmented RTree to efficiently solve this important subproblem of index spatial moving objects.
 
-% ensure same length columns on last page (might need two sub-sequent latex runs)
+Future work includes how to provide privacy protection,
+since people always don't want to expose their trip.
+Besides, driverless cars and control center may not necessary belong to the same company.
+There may also be many driverless vehicles companies and control center companies.
+So we need verification algorithm for the cars know that the shedule is indeed the optimal.
+
+We believe the transportation system will be much more different than it is today,
+and we hope our work can stimulate much more valuable work towards next generation transportation.
+
 \balance
 
 \bibliographystyle{abbrv}
